@@ -1,8 +1,9 @@
-//  This creates the enemies
-//  Shoot Projectiles
-controller.player1.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Pressed, function on_player1_button_a_pressed() {
-    
-    projectile = sprites.createProjectileFromSprite(img`
+# This creates the enemies
+# Shoot Projectiles
+
+def on_player1_button_a_pressed():
+    global projectile
+    projectile = sprites.create_projectile_from_sprite(img("""
             . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
@@ -19,34 +20,40 @@ controller.player1.onButtonEvent(ControllerButton.A, ControllerButtonEvent.Press
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . .
-        `, starship, 50, 0)
-})
-//  Blow Up the Rock When Projectile Hits It
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function on_on_overlap(sprite: Sprite, otherSprite: Sprite) {
+        """),
+        starship,
+        50,
+        0)
+controller.player1.on_button_event(ControllerButton.A,
+    ControllerButtonEvent.PRESSED,
+    on_player1_button_a_pressed)
+
+# Blow Up the Rock When Projectile Hits It
+
+def on_on_overlap(sprite, otherSprite):
     otherSprite.destroy(effects.fire, 100)
     sprite.destroy()
-    info.changeScoreBy(1)
-    if (info.score() % 10 == 0) {
-        if (info.score() < 5) {
-            info.changeLifeBy(1)
-        }
-        
-    }
-    
-})
-//  Lose a Life When You Hit a Rock
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function on_on_overlap2(sprite: Sprite, otherSprite: Sprite) {
+    info.change_score_by(1)
+    if info.score() % 10 == 0:
+        if info.score() < 5:
+            info.change_life_by(1)
+sprites.on_overlap(SpriteKind.projectile, SpriteKind.enemy, on_on_overlap)
+
+# Lose a Life When You Hit a Rock
+
+def on_on_overlap2(sprite, otherSprite):
     otherSprite.destroy(effects.fire, 100)
-    info.changeLifeBy(-1)
-})
-let enemy : Sprite = null
-let projectile : Sprite = null
-let starship : Sprite = null
-//  Setup Lives and Score
-info.setScore(0)
-info.setLife(3)
-//  Setup Player
-starship = sprites.create(img`
+    info.change_life_by(-1)
+sprites.on_overlap(SpriteKind.player, SpriteKind.enemy, on_on_overlap2)
+
+enemy: Sprite = None
+projectile: Sprite = None
+starship: Sprite = None
+# Setup Lives and Score
+info.set_score(0)
+info.set_life(3)
+# Setup Player
+starship = sprites.create(img("""
         . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . . 
@@ -63,16 +70,18 @@ starship = sprites.create(img`
             4 4 2 2 2 . . . . . . . . . . . 
             2 2 2 . . . . . . . . . . . . . 
             . . . . . . . . . . . . . . . .
-    `, 0)
-starship.setPosition(20, scene.screenHeight() / 2)
-starship.setFlag(SpriteFlag.StayInScreen, true)
-starship.setKind(SpriteKind.Player)
-//  Setup Controls
-controller.moveSprite(starship, 200, 200)
-//  Generate Enemies
-game.onUpdateInterval(750, function on_update_interval() {
-    
-    enemy = sprites.create(img`
+    """),
+    0)
+starship.set_position(20, scene.screen_height() / 2)
+starship.set_flag(SpriteFlag.STAY_IN_SCREEN, True)
+starship.set_kind(SpriteKind.player)
+# Setup Controls
+controller.move_sprite(starship, 200, 200)
+# Generate Enemies
+
+def on_update_interval():
+    global enemy
+    enemy = sprites.create(img("""
             . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
@@ -89,8 +98,9 @@ game.onUpdateInterval(750, function on_update_interval() {
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . . 
                     . . . . . . . . . . . . . . . .
-        `, 0)
-    enemy.setPosition(scene.screenWidth(), randint(0, scene.screenHeight()))
-    enemy.setVelocity(-50, 0)
-    enemy.setKind(SpriteKind.Enemy)
-})
+        """),
+        0)
+    enemy.set_position(scene.screen_width(), randint(0, scene.screen_height()))
+    enemy.set_velocity(-50, 0)
+    enemy.set_kind(SpriteKind.enemy)
+game.on_update_interval(750, on_update_interval)
